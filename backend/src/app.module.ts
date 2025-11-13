@@ -5,13 +5,12 @@ import * as path from 'path';
 
 import { FilmsModule } from './films/films.module';
 import { OrderModule } from './order/order.module';
-import { configProvider } from './app.config.provider';
-import { MongooseModule } from '@nestjs/mongoose';
+import { DatabaseModule } from './database.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.DATABASE_URL),
+    DatabaseModule,
     FilmsModule,
     OrderModule,
     ServeStaticModule.forRoot({

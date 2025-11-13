@@ -2,22 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Film } from '../entity/film.entity';
-import { FilmDto, FilmScheduleDto } from './dto/films.dto';
+import { FilmDto, FilmScheduleDto } from '../films/dto/films.dto';
+
+export interface FilmsRepository {
+  findAll(): Promise<FilmDto[]>;
+  findSchedule(filmId: string): Promise<FilmScheduleDto[]>;
+}
 
 @Injectable()
-export class FilmsService {
+export class TypeOrmFilmsRepository implements FilmsRepository {
   constructor(
     @InjectRepository(Film)
-    private readonly filmRepo: Repository<Film>,
+    private readonly repo: Repository<Film>,
   ) {}
 
-  async getAllFilms(): Promise<FilmDto[]> {
-    const films = await this.filmRepo.find();
+  async findAll(): Promise<FilmDto[]> {
+    const films = await this.repo.find();
     return films.map(f => ({
       id: f.id,
       title: f.title,
       director: f.director,
-      tags: f.tags.split(','), // если в БД хранится строка
+      tags: f.tags.split(','),
       rating: f.rating,
       about: f.about,
       description: f.description,
@@ -26,12 +31,11 @@ export class FilmsService {
     }));
   }
 
-  async getFilmSchedule(filmId: string): Promise<FilmScheduleDto[]> {
-    const film = await this.filmRepo.findOne({
-      where: { id: filmId },
-      relations: ['schedule'],
+  async findSchedule(filmId: string): Promise<FilmScheduleDto[]> {
+    const film = await this.repo.findOne({ 
+      where: { id: filmId }, 
+      relations: ['schedule'] 
     });
-
     if (!film) return [];
 
     return film.schedule.map(s => ({
@@ -41,7 +45,7 @@ export class FilmsService {
       rows: s.rows,
       seats: s.seats,
       price: s.price,
-      taken: s.taken.split(','), // если в БД хранится строка
+      taken: s.taken ? s.taken.split(',') : [],
     }));
   }
 }
