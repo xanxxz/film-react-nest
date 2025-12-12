@@ -1,5 +1,6 @@
-# 1) Stage: build
-FROM node:20 AS builder
+# Билд этап
+FROM node:20-alpine AS builder
+
 WORKDIR /app
 
 COPY package*.json ./
@@ -8,14 +9,15 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
+# Продакшен образ
+FROM node:20-alpine
 
-# 2) Stage: production
-FROM node:20 AS prod
 WORKDIR /app
 
+COPY --from=builder /app/dist ./dist
 COPY package*.json ./
+
 RUN npm ci --omit=dev
 
-COPY --from=builder /app/dist ./dist
-
+EXPOSE 3000
 CMD ["node", "dist/main.js"]

@@ -1,67 +1,59 @@
+version: "3.9"
+
 services:
   frontend:
-    build:
-      context: ./frontend
     image: ghcr.io/xanxxz/film-frontend:latest
-    volumes:
-      - frontend_dist:/app/dist
+    restart: always
     networks:
-      - appnet
+      - film-network
 
   backend:
-    build:
-      context: ./backend
     image: ghcr.io/xanxxz/film-backend:latest
+    restart: always
     environment:
-      DATABASE_URL: postgres://postgres:postgres@db:5432/film_db
+      POSTGRES_HOST: db
+      POSTGRES_USER: prac
+      POSTGRES_PASSWORD: prac
+      POSTGRES_DB: prac
     networks:
-      - appnet
-    depends_on:
-      - db
+      - film-network
 
   nginx:
-    build:
-      context: ./nginx
     image: ghcr.io/xanxxz/film-nginx:latest
+    restart: always
     ports:
       - "80:80"
-    volumes:
-      - frontend_dist:/usr/share/nginx/html
     networks:
-      - appnet
+      - film-network
     depends_on:
       - frontend
       - backend
 
   db:
-    image: postgres:16
+    image: postgres:17
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: film_db
+      POSTGRES_USER: prac
+      POSTGRES_PASSWORD: prac
+      POSTGRES_DB: prac
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     networks:
-      - appnet
+      - film-network
 
   pgadmin:
     image: dpage/pgadmin4
     restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - "8080:80"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    volumes:
-      - pgadmin_data:/var/lib/pgadmin
     networks:
-      - appnet
-
-volumes:
-  frontend_dist:
-  db_data:
-  pgadmin_data:
+      - film-network
 
 networks:
-  appnet:
+  film-network:
+
+volumes:
+  pgdata:
