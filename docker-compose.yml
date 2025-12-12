@@ -2,13 +2,13 @@ version: "3.9"
 
 services:
   frontend:
-    image: ghcr.io/xanxxz/film-frontend:latest
+    image: ghcr.io/xanxxz/film-react-nest/frontend:latest
     restart: always
     networks:
       - film-network
 
   backend:
-    image: ghcr.io/xanxxz/film-backend:latest
+    image: ghcr.io/xanxxz/film-react-nest/backend:latest
     restart: always
     environment:
       POSTGRES_HOST: db
@@ -19,7 +19,7 @@ services:
       - film-network
 
   nginx:
-    image: ghcr.io/xanxxz/film-nginx:latest
+    image: ghcr.io/xanxxz/film-react-nest/nginx:latest
     restart: always
     ports:
       - "80:80"
