@@ -1,0 +1,67 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    image: ghcr.io/xanxxz/film-frontend:latest
+    volumes:
+      - frontend_dist:/app/dist
+    networks:
+      - appnet
+
+  backend:
+    build:
+      context: ./backend
+    image: ghcr.io/xanxxz/film-backend:latest
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/film_db
+    networks:
+      - appnet
+    depends_on:
+      - db
+
+  nginx:
+    build:
+      context: ./nginx
+    image: ghcr.io/xanxxz/film-nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - frontend_dist:/usr/share/nginx/html
+    networks:
+      - appnet
+    depends_on:
+      - frontend
+      - backend
+
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: film_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - appnet
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - appnet
+
+volumes:
+  frontend_dist:
+  db_data:
+  pgadmin_data:
+
+networks:
+  appnet:
