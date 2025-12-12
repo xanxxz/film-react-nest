@@ -1,5 +1,5 @@
-# ---------- Сборка backend ----------
-FROM node:18-alpine AS builder
+# 1) Stage: build
+FROM node:20 AS builder
 WORKDIR /app
 
 COPY package*.json ./
@@ -8,8 +8,9 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# ---------- Продакшен ----------
-FROM node:18-alpine AS prod
+
+# 2) Stage: production
+FROM node:20 AS prod
 WORKDIR /app
 
 COPY package*.json ./
