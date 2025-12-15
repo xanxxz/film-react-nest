@@ -1,10 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Film } from './entity/film.entity';
 import { Schedule } from './entity/schedule.entity';
-import { Film as FilmMongo, FilmSchema } from './films/schemas/film.schema';
 
 @Module({
   imports: [
