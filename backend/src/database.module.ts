@@ -31,16 +31,16 @@ import { Film as FilmMongo, FilmSchema } from './films/schemas/film.schema';
     TypeOrmModule.forFeature([Film, Schedule]),
 
 
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => {
-        if (config.get('DATABASE_DRIVER') !== 'mongodb') 
-          return { uri: config.get('DATABASE_URL') };
-      },
-    }),
-    MongooseModule.forFeature([{ name: FilmMongo.name, schema: FilmSchema }]),
+    //MongooseModule.forRootAsync({
+      //imports: [ConfigModule],
+      //inject: [ConfigService],
+      //useFactory: (config: ConfigService) => {
+        //if (config.get('DATABASE_DRIVER') !== 'mongodb') 
+          //return { uri: config.get('DATABASE_URL') };
+      //},
+    //}),
+    //MongooseModule.forFeature([{ name: FilmMongo.name, schema: FilmSchema }]),
   ],
-  exports: [TypeOrmModule, MongooseModule],
+  exports: [TypeOrmModule],
 })
 export class DatabaseModule {}
