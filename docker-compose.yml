@@ -1,20 +1,18 @@
 version: "3.9"
 
 services:
-  frontend:
-    image: ghcr.io/xanxxz/film-react-nest/frontend:latest
-    restart: always
-    networks:
-      - film-network
-
   backend:
     image: ghcr.io/xanxxz/film-react-nest/backend:latest
     restart: always
     environment:
+      DB_TYPE: postgres
       POSTGRES_HOST: db
+      DB_PORT: 5432
       POSTGRES_USER: prac
       POSTGRES_PASSWORD: prac
       POSTGRES_DB: prac
+    depends_on:
+      - db
     networks:
       - film-network
 
@@ -26,7 +24,6 @@ services:
     networks:
       - film-network
     depends_on:
-      - frontend
       - backend
 
   db:
