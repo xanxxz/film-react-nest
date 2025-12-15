@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  backend:
+    image: ghcr.io/xanxxz/film-react-nest/backend:latest
+    restart: always
+    environment:
+      DATABASE_DRIVER: postgres
+      DATABASE_HOST: db
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: prac
+      DATABASE_PASSWORD: prac
+      DATABASE_NAME: prac
+    depends_on:
+      - db
+    networks:
+      - film-network
+
+  nginx:
+    image: ghcr.io/xanxxz/film-react-nest/nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - film-network
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_USER: prac
+      POSTGRES_PASSWORD: prac
+      POSTGRES_DB: prac
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - film-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8080:80"
+    networks:
+      - film-network
+
+networks:
+  film-network:
+
+volumes:
+  pgdata:
